@@ -50,7 +50,7 @@ if uploaded_file and title and author:
         if include_toc:
             docx.add_heading("Table of Contents", level=1)
             for i, ch in enumerate(chapters):
-                docx.add_paragraph(f"Chapter {i+1}", style='List Number')
+                docx.add_paragraph(ch.split("\n")[0], style='List Number')
             docx.add_page_break()
         for ch in chapters:
             docx.add_heading(ch.split("\n")[0], level=1)
