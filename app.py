@@ -32,15 +32,12 @@ if uploaded_file and title and author:
 
     st.success("File uploaded and parsed.")
 
-    # Simulated AI cleanup
     if clean_grammar:
-        raw_text = raw_text.replace("\n\n", "\n")  # Simple cleanup
+        raw_text = raw_text.replace("\n\n", "\n")
 
-    # Chapter splitting (basic simulation)
     chapters = raw_text.split("Chapter ")[1:] if "Chapter " in raw_text else [raw_text]
     chapters = ["Chapter " + c.strip() for c in chapters]
 
-    # Generate DOCX
     def generate_docx():
         output = BytesIO()
         docx = Document()
@@ -62,7 +59,6 @@ if uploaded_file and title and author:
         docx.save(output)
         return output.getvalue()
 
-    # Generate EPUB
     def generate_epub():
         book = epub.EpubBook()
         book.set_identifier("id123456")
@@ -86,31 +82,29 @@ if uploaded_file and title and author:
         with open("output.epub", "rb") as f:
             return f.read()
 
-    # Generate PDF
     def generate_pdf():
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.add_page()
         pdf.set_font("Times", 'B', 16)
-        pdf.multi_cell(0, 10, title)
+        pdf.multi_cell(0, 10, title.encode('latin-1', 'replace').decode('latin-1'))
         if subtitle:
             pdf.set_font("Times", '', 12)
-            pdf.multi_cell(0, 10, subtitle)
+            pdf.multi_cell(0, 10, subtitle.encode('latin-1', 'replace').decode('latin-1'))
         pdf.set_font("Times", '', 10)
-        pdf.multi_cell(0, 10, f"by {author}")
+        pdf.multi_cell(0, 10, f"by {author}".encode('latin-1', 'replace').decode('latin-1'))
         pdf.ln(10)
         for ch in chapters:
             pdf.add_page()
             pdf.set_font("Times", 'B', 14)
-            pdf.multi_cell(0, 10, ch.split("\n")[0])
+            pdf.multi_cell(0, 10, ch.split("\n")[0].encode('latin-1', 'replace').decode('latin-1'))
             pdf.set_font("Times", '', 12)
             for p in ch.split("\n")[1:]:
-                pdf.multi_cell(0, 10, p)
+                pdf.multi_cell(0, 10, p.encode('latin-1', 'replace').decode('latin-1'))
         pdf_output = BytesIO()
         pdf.output(pdf_output)
         return pdf_output.getvalue()
 
-    # Downloads
     if "Print (.docx)" in formats:
         docx_bytes = generate_docx()
         st.download_button("📄 Download DOCX", docx_bytes, file_name="formatted_book.docx")
